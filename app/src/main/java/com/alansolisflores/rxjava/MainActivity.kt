@@ -13,7 +13,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener{
 
     private val TAG = "MainActivity"
 
-    private lateinit var taskButton: Button
+    private var taskButton: Button? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener{
 
     private fun initProperties(){
         this.taskButton = findViewById(R.id.taskButton)
-        this.taskButton.setOnClickListener(this)
+        this.taskButton?.setOnClickListener(this)
     }
 
     override fun onClick(p0: View?) {
