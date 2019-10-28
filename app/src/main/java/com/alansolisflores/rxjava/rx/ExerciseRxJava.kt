@@ -1,11 +1,18 @@
 package com.alansolisflores.rxjava.rx
 
+import io.reactivex.Flowable
+import io.reactivex.Observable
+import io.reactivex.Observer
+import io.reactivex.SingleObserver
+import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.toObservable
 
 fun main(args: Array<String>){
-    val exercise = Examples
-    exercise.filerAndMap()
-    exercise.flatMapExample()
+    Examples.filerAndMap()
+    Examples.flatMapExample()
+    Examples.Create()
+    Examples.Flowable()
+    Examples.GroupByExample()
 }
 
 object Examples {
@@ -39,5 +46,54 @@ object Examples {
                .flatMap { it.toObservable() }
             .map { it.toString() }
             .subscribe{print("[$it]")}
+    }
+
+    fun GroupByExample(){
+        val wordsObservable =
+            Observable.just("hello","come","create","single","done")
+
+        wordsObservable.groupBy { it.length == 6 }
+            .subscribe{group->
+                group.subscribe{println("Group ${group.key} [$it]")}
+            }
+    }
+
+    fun Create(){
+        getObservable().map { it.toString() }
+                        .subscribe(::println)
+    }
+
+    /**
+     * Collection more than 10000 elements
+     */
+    fun Flowable(){
+        val flowableObservable = Flowable.just(1,2,3,4)
+        flowableObservable.reduce(50,{t1,t2->t1+t2}).subscribe(getSingleObserver())
+    }
+
+    private fun getObservable(): Observable<Int>{
+        return Observable.create{subscriber ->
+            for (i in 1..10){
+                subscriber.onNext(i)
+            }
+
+            subscriber.onComplete()
+        }
+    }
+
+    private fun getSingleObserver(): SingleObserver<Int>{
+        return object: SingleObserver<Int>{
+            override fun onSubscribe(d: Disposable) {
+                println("OnSubscribe")
+            }
+
+            override fun onSuccess(t: Int) {
+                println("OnSuccess: $t")
+            }
+
+            override fun onError(e: Throwable) {
+                println("OnError ${e.message}")
+            }
+        }
     }
 }
